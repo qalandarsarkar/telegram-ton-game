@@ -1,20 +1,17 @@
 require('dotenv').config();
-
 const express = require('express');
-const cors = require('cors');
-
-require('./bot');
-
 const app = express();
+const bot = require('./bot');
 
-app.use(cors());
 app.use(express.json());
 
-app.get('/', (req, res) => {
-  res.send('TON Tap Backend Running');
+// Telegram webhook listener
+app.post(`/bot${process.env.BOT_TOKEN}`, (req, res) => {
+  bot.processUpdate(req.body);
+  res.sendStatus(200);
 });
 
+app.get('/', (req, res) => res.send('Server Active'));
+
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
